@@ -16,7 +16,8 @@ const styles = StyleSheet.create({
 	spinnerContainer: {
 		flex: 1,
 		justifyContent: 'center',
-		alignItems: 'center'
+		alignItems: 'center',
+		zIndex: 500
 	}
 });
 

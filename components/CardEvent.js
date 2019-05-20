@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, FlatList, StyleSheet } from 'react-native';
+import { View, FlatList, StyleSheet, Dimensions } from 'react-native';
 import { Searchbar, IconButton } from 'react-native-paper';
 import Spinner from './common/Spinner';
 import eventumAPI from '../helpers/apiHelper';
@@ -172,8 +172,19 @@ export default class CardEvent extends Component {
 						/>
 					)}
 				</View>
-				{!events && loading && <Spinner size="large" color="#54BFA1" />}
-				{events && !loading && (
+
+				{loading && (
+					<View
+						style={{
+							flex: 1,
+							marginTop: Dimensions.get('window').height / 3.4
+						}}
+					>
+						<Spinner size="large" color="#54BFA1" />
+					</View>
+				)}
+
+				{!loading && (
 					<FlatList
 						data={events}
 						renderItem={this.cardJSX}
