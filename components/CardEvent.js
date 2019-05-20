@@ -198,6 +198,7 @@ export default class CardEvent extends Component {
 
 const styles = StyleSheet.create({
 	container: {
+		flex: 1,
 		elevation: 10,
 		marginTop: 10,
 		marginBottom: 10,
@@ -207,7 +208,9 @@ const styles = StyleSheet.create({
 		minHeight: 200
 	},
 	cardTop: {
+		flex: 1,
 		flexDirection: 'row',
+		flexWrap: 'nowrap',
 		alignItems: 'center',
 		width: '100%'
 	},
@@ -216,7 +219,8 @@ const styles = StyleSheet.create({
 		justifyContent: 'space-around',
 		alignItems: 'center',
 		flex: 1,
-		width: '100%'
+		width: '100%',
+		marginHorizontal: 10
 	},
 	cardBottom: {
 		flex: 1,

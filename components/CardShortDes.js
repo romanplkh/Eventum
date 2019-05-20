@@ -18,8 +18,7 @@ const styles = StyleSheet.create({
 	cardDetails: {
 		flex: 3,
 		flexDirection: 'column',
-		alignItems: 'flex-start',
-		justifyContent: 'center'
+		justifyContent: 'flex-start'
 	},
 	textStyle: {
 		color: '#000'
