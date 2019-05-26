@@ -1,5 +1,14 @@
 import React, { Component } from 'react';
-import { View, Button, StyleSheet, ImageBackground, Image } from 'react-native';
+import {
+	View,
+	Button,
+	StyleSheet,
+	ImageBackground,
+	Image,
+	TouchableOpacity,
+	Text,
+	Keyboard
+} from 'react-native';
 import Spinner from '../components/common/Spinner';
 import Authentication from '../helpers/auth';
 import imgSrc from '../assets/img/login.jpg';
@@ -14,7 +23,9 @@ export default class Auth extends Component {
 		email: '',
 		password: '',
 		loading: false,
-		errors: ''
+		errors: '',
+		newUser: false,
+		keyboardOpen: false
 	};
 
 	authenticate = () => {
@@ -28,7 +39,7 @@ export default class Auth extends Component {
 			.logIn(email, password)
 			.then(user => {
 				this.setState({ loading: false, errors: '' });
-				navigate('Main', { name: user.displayName });
+				navigate('App', { name: user.displayName });
 			})
 			.catch(error => {
 				/* IF LOGIN FAIL TRY TO SIGN UP USER */
@@ -42,7 +53,7 @@ export default class Auth extends Component {
 					})
 					.then(user => {
 						this.setState({ loading: false, errors: '' });
-						navigate('Main', { name: this.state.name });
+						navigate('App', { name: this.state.name });
 					})
 					.catch(() => {
 						//CATCHES IF USER ALREADY EXISTS BUT PROVIDED WRONG PASSWORD
@@ -54,43 +65,78 @@ export default class Auth extends Component {
 			});
 	};
 
+	componentDidMount() {
+		/* 	this.keyboardDidShowListener = Keyboard.addListener(
+			'keyboardDidShow',
+			this.keyboardDidShow
+		);
+		this.keyboardDidHideListener = Keyboard.addListener(
+			'keyboardDidHide',
+			this.keyboardDidHide
+		); */
+	}
+
+	componentWillUnmount() {
+		/* 	this.keyboardDidShowListener && this.keyboardDidShowListener.remove();
+		this.keyboardDidHideListener && this.keyboardDidHideListener.remove(); */
+	}
+
+	keyboardDidShow = () => {
+		this.setState({ keyboardOpen: true });
+	};
+
+	keyboardDidHide = () => {
+		this.setState({ keyboardOpen: false });
+	};
+
+	onKeyboardOpenInputStyle = () => {
+		return {
+			marginTop: 40
+		};
+	};
+
 	onChangeText = (text, key) => this.setState({ [key]: text });
 
 	render() {
-		const { loading, errors } = this.state;
+		const { loading, errors, newUser, keyboardOpen } = this.state;
 		return (
 			<ImageBackground
 				source={imgSrc}
 				style={{ width: '100%', height: '100%' }}
 			>
 				<View style={styles.appContainer}>
-					<Image
-						source={logoTransp}
-						style={{
-							flex: 1,
-							width: '100%'
-						}}
-						resizeMode="contain"
-					/>
-					<View style={styles.containerInput}>
-						<View style={styles.title} />
-						<InputLogin
-							placeholder="name"
-							onChangeTextInput={(text, key) => this.onChangeText(text, 'name')}
-							iconName="user"
+					{!keyboardOpen && (
+						<Image
+							source={logoTransp}
+							style={{
+								flex: 1,
+								width: '100%'
+							}}
+							resizeMode="contain"
 						/>
+					)}
+					<View
+						style={[
+							styles.containerInput,
+							keyboardOpen ? this.onKeyboardOpenInputStyle() : null
+						]}
+					>
+						<View style={styles.title} />
+						{newUser && (
+							<InputLogin
+								placeholder="name"
+								onChangeTextInput={text => this.onChangeText(text, 'name')}
+								iconName="user"
+							/>
+						)}
 						<InputLogin
 							placeholder="email"
-							onChangeTextInput={(text, key) =>
-								this.onChangeText(text, 'email')
-							}
+							onChangeTextInput={text => this.onChangeText(text, 'email')}
 							iconName="envelope"
 						/>
 						<InputLogin
 							placeholder="password"
-							onChangeTextInput={(text, key) =>
-								this.onChangeText(text, 'password')
-							}
+							onChangeTextInput={text => this.onChangeText(text, 'password')}
 							iconName="lock"
 							errors={errors}
 							secure={true}
@@ -105,6 +151,12 @@ export default class Auth extends Component {
 							)}
 							{loading && <Spinner color="#fff" />}
 						</View>
+						<TouchableOpacity
+							onPress={() => this.setState({ newUser: true })}
+							style={styles.signUp}
+						>
+							<Text>Don't have an account</Text>
+						</TouchableOpacity>
 					</View>
 				</View>
 			</ImageBackground>
@@ -123,11 +175,14 @@ const styles = StyleSheet.create({
 		borderRadius: 5
 	},
 	btn: {
-		marginTop: 30,
-		marginBottom: 30
+		marginTop: 20
 	},
 	textStyle: {
 		color: '#fff',
 		fontWeight: '700'
+	},
+	signUp: {
+		alignItems: 'center',
+		marginVertical: 30
 	}
 });

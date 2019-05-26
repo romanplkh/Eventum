@@ -80,7 +80,7 @@ export default class Favour extends Component {
 		const { events } = this.state;
 		return (
 			<View style={{ flex: 1 }}>
-				{!events && <Spinner />}
+				{!events && <Spinner color="#54BFA1" />}
 				{events && (
 					<FlatList
 						keyExtractor={this.keyExtractor}

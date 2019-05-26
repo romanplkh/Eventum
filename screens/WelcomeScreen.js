@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
 import firebase from 'firebase';
-import NetInfo from '@react-native-community/netinfo';
 import Slides from '../components/Slides';
 import Spinner from '../components/common/Spinner';
 import OfflineMode from '../components/OfflineMode';
@@ -24,26 +23,14 @@ export default class WelcomeScreen extends Component {
 		});
 	};
 
-	onConnection = () => {
-		this.unsubscribe = NetInfo.addEventListener(state => {
-			if (state.isConnected) {
-				this.fireBaseUserChecker();
-			}
-
-			this.setState({ connection: state.isConnected });
-		});
-	};
-
 	componentDidMount() {
-		this.onConnection();
+		this.fireBaseUserChecker();
 	}
 
 	//REMOVE ASYNC LISTENERS SO IT DOES NOT FIRE ON UNMOUNTED COMPONENT
 	componentWillUnmount() {
 		this.fireBaseListener && this.fireBaseListener();
 		this.fireBaseUserChecker = undefined;
-		this.unsubscribe && this.unsubscribe();
-		this.onConnection = undefined;
 	}
 
 	onSignMeInHandler = () => {

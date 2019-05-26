@@ -91,7 +91,7 @@ export default class EventDetails extends Component {
 	render() {
 		const { venue, location } = this.state;
 		if (!venue || !location.latitude) {
-			return <Spinner />;
+			return <Spinner color="#54BFA1" />;
 		} else {
 			return (
 				<Provider>

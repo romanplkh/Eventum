@@ -93,8 +93,8 @@ export const AppContainer = createAppContainer(
 	createSwitchNavigator(
 		{
 			Welcome: WelcomeScreen,
-			App: TabNavigator,
-			Auth: Auth
+			Auth: Auth,
+			App: TabNavigator
 		},
 		{ initialRouteName: 'Welcome' }
 	)
