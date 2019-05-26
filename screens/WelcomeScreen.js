@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
-import Slides from '../components/Slides';
 import firebase from 'firebase';
+import NetInfo from '@react-native-community/netinfo';
+import Slides from '../components/Slides';
 import Spinner from '../components/common/Spinner';
+import OfflineMode from '../components/OfflineMode';
 import { SLIDE_DATA } from '../assets/slidersData';
 
 export default class WelcomeScreen extends Component {
 	state = {
-		user: true
+		user: true,
+		connection: true
 	};
 
 	fireBaseUserChecker = () => {
@@ -21,14 +24,26 @@ export default class WelcomeScreen extends Component {
 		});
 	};
 
+	onConnection = () => {
+		this.unsubscribe = NetInfo.addEventListener(state => {
+			if (state.isConnected) {
+				this.fireBaseUserChecker();
+			}
+
+			this.setState({ connection: state.isConnected });
+		});
+	};
+
 	componentDidMount() {
-		this.fireBaseUserChecker();
+		this.onConnection();
 	}
 
-	//REMOVE ASYNC LISTENERS FROM FIREBASE SO IT DOES NOT FIRE ON UNMOUNTED COMPONENT
+	//REMOVE ASYNC LISTENERS SO IT DOES NOT FIRE ON UNMOUNTED COMPONENT
 	componentWillUnmount() {
 		this.fireBaseListener && this.fireBaseListener();
 		this.fireBaseUserChecker = undefined;
+		this.unsubscribe && this.unsubscribe();
+		this.onConnection = undefined;
 	}
 
 	onSignMeInHandler = () => {
@@ -36,9 +51,13 @@ export default class WelcomeScreen extends Component {
 	};
 
 	render() {
+		const { connection } = this.state;
 		return (
 			<View style={{ flex: 1 }}>
-				<Slides data={SLIDE_DATA} onSignMeIn={this.onSignMeInHandler} />
+				{connection && (
+					<Slides data={SLIDE_DATA} onSignMeIn={this.onSignMeInHandler} />
+				)}
+				{!connection && <OfflineMode />}
 				<View style={{ position: 'relative', top: -200 }}>
 					{this.state.user && <Spinner color="#fff" />}
 				</View>
