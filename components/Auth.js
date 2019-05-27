@@ -66,19 +66,19 @@ export default class Auth extends Component {
 	};
 
 	componentDidMount() {
-		/* 	this.keyboardDidShowListener = Keyboard.addListener(
+		this.keyboardDidShowListener = Keyboard.addListener(
 			'keyboardDidShow',
 			this.keyboardDidShow
 		);
 		this.keyboardDidHideListener = Keyboard.addListener(
 			'keyboardDidHide',
 			this.keyboardDidHide
-		); */
+		);
 	}
 
 	componentWillUnmount() {
-		/* 	this.keyboardDidShowListener && this.keyboardDidShowListener.remove();
-		this.keyboardDidHideListener && this.keyboardDidHideListener.remove(); */
+		this.keyboardDidShowListener && this.keyboardDidShowListener.remove();
+		this.keyboardDidHideListener && this.keyboardDidHideListener.remove();
 	}
 
 	keyboardDidShow = () => {
