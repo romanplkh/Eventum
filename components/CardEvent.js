@@ -1,5 +1,11 @@
 import React, { Component } from 'react';
-import { View, FlatList, StyleSheet, Dimensions } from 'react-native';
+import {
+	View,
+	FlatList,
+	StyleSheet,
+	Dimensions,
+	PermissionsAndroid
+} from 'react-native';
 import { Searchbar, IconButton } from 'react-native-paper';
 import Spinner from './common/Spinner';
 import eventumAPI from '../helpers/apiHelper';
@@ -50,27 +56,41 @@ export default class CardEvent extends Component {
 			.add(event);
 	};
 
-	onLocationEventSearch = () => {
+	onLocationEventSearch = async () => {
 		this.setState({ navigationSearch: true });
 		try {
-			navigator.geolocation.getCurrentPosition(
-				position => {
-					const { latitude, longitude } = position.coords;
-					this.eventumAPI
-						.getEventsByLocation(latitude, longitude)
-						.then(response => {
-							let sortedEventsByDate = response.events.sort(sortEvents);
-							this.setState({
-								events: sortedEventsByDate,
-								navigationSearch: false
-							});
-						});
-				},
-				error => {
-					alert(`${error.message}`);
-					this.setState({ navigationSearch: false });
+			const granted = await PermissionsAndroid.request(
+				'android.permission.ACCESS_FINE_LOCATION',
+				{
+					title: 'Eventum Geolocation Pemission',
+					message: 'Eventum needs access to your geolocation',
+					buttonNegative: 'Cancel',
+					buttonPositive: 'OK'
 				}
 			);
+
+			if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+				navigator.geolocation.getCurrentPosition(
+					position => {
+						const { latitude, longitude } = position.coords;
+						this.eventumAPI
+							.getEventsByLocation(latitude, longitude)
+							.then(response => {
+								let sortedEventsByDate = response.events.sort(sortEvents);
+								this.setState({
+									events: sortedEventsByDate,
+									navigationSearch: false
+								});
+							});
+					},
+					error => {
+						alert(`${error.message}`);
+						this.setState({ navigationSearch: false });
+					}
+				);
+			} else {
+				return;
+			}
 		} catch (error) {
 			console.log(error);
 		}
