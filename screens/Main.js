@@ -25,6 +25,8 @@ export default class Main extends Component {
 		};
 	};
 
+
+	//SCROLL TO TOP
 	toTop = () => {
 		this.refs.ScrollEvent.scrollTo({
 			y: 0,

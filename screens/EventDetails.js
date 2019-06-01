@@ -19,6 +19,7 @@ export default class EventDetails extends Component {
 		};
 	};
 
+	//INIT CUSTOM API HELPER
 	eventumAPI = new Eventum();
 
 	state = {
@@ -32,6 +33,7 @@ export default class EventDetails extends Component {
 		open: false
 	};
 
+	//GET EVENT DETAILS FROM API
 	async componentDidMount() {
 		const events = await this.eventumAPI.getEventById(
 			`${this.props.navigation.getParam('itemId')}`
@@ -49,21 +51,22 @@ export default class EventDetails extends Component {
 		});
 	}
 
+	//REMOVE FROM STATE DATA ABOUT EVENT
 	componentWillUnmount() {
 		this.setState({ venue: null });
 	}
 
+	//SAVE EVENT IN CLOUD DB
 	addToFavour = event => {
 		//GET USER ID
 		const user = firebase.auth().currentUser;
-
+		//SAVE FILE
 		const docRef = db
 			.collection('users')
 			.doc(user.uid)
 			.collection('favours');
 
 		//CHECK IF EVENT ALREADY HAS BEEN ADDED TO FAVOURITES
-
 		let eventsArr = [];
 		docRef
 			.where('eventID', '==', event.eventID)
@@ -81,6 +84,7 @@ export default class EventDetails extends Component {
 			});
 	};
 
+	//@DELETE?????
 	renderNode = (node, index, siblings, parent, defaultRenderer) => {
 		if (node.name == 'img') {
 			const a = node.attribs;
@@ -97,10 +101,10 @@ export default class EventDetails extends Component {
 				<Provider>
 					<ScrollView style={{ flex: 1 }} ref="scrollView">
 						<Tile
-							imageSrc={{ uri: venue.logo.url }}
-							title={venue.name.text}
+							imageSrc={{ uri: venue.logo.url || "" }}
+							title={venue.name.text || "no title"}
 							featured
-							caption={venue.venue.name}
+							caption={venue.venue.name || "no name"}
 							captionStyle={{ fontWeight: 'bold' }}
 							overlayContainerStyle={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
 						/>
@@ -141,16 +145,16 @@ export default class EventDetails extends Component {
 						/>
 						<ListAddress
 							heading={'Address'}
-							title_addr={`${venue.venue.address.address_1}, ${
-								venue.venue.address.city
+							title_addr={`${venue.venue.address.address_1 || "no address"}, ${
+								venue.venue.address.city || "no city"
 							}`}
-							title_addr_sec={`${venue.venue.address.city}, ${
-								venue.venue.address.postal_code
+							title_addr_sec={`${venue.venue.address.city || "no city"}, ${
+								venue.venue.address.postal_code || "no postal code"
 							}`}
 							icon_addr="place"
 							time={
 								<Moment element={Text} format="LLLL">
-									{venue.start.local}
+									{venue.start.local || "no date"}
 								</Moment>
 							}
 							icon_time="timer"

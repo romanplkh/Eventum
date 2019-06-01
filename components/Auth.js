@@ -66,6 +66,8 @@ export default class Auth extends Component {
 	};
 
 	componentDidMount() {
+
+		//Track when keyboard is open or closed
 		this.keyboardDidShowListener = Keyboard.addListener(
 			'keyboardDidShow',
 			this.keyboardDidShow
@@ -77,6 +79,8 @@ export default class Auth extends Component {
 	}
 
 	componentWillUnmount() {
+
+		//Remove listeners when component unmounted.
 		this.keyboardDidShowListener && this.keyboardDidShowListener.remove();
 		this.keyboardDidHideListener && this.keyboardDidHideListener.remove();
 	}

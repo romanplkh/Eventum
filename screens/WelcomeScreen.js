@@ -12,6 +12,11 @@ export default class WelcomeScreen extends Component {
 		connection: true
 	};
 
+	//CHECK IF USER WAS LOGGED IN PREVIOUSLY
+	componentDidMount() {
+		this.fireBaseUserChecker();
+	}
+
 	fireBaseUserChecker = () => {
 		//CREATE A REF TO THE FIREBASE LISTENERS, SO WE CAN REMOVE IT ONCE WE ARE ON THE MAIN PAGE
 		this.fireBaseListener = firebase.auth().onAuthStateChanged(user => {
@@ -23,16 +28,13 @@ export default class WelcomeScreen extends Component {
 		});
 	};
 
-	componentDidMount() {
-		this.fireBaseUserChecker();
-	}
-
 	//REMOVE ASYNC LISTENERS SO IT DOES NOT FIRE ON UNMOUNTED COMPONENT
 	componentWillUnmount() {
 		this.fireBaseListener && this.fireBaseListener();
 		this.fireBaseUserChecker = undefined;
 	}
 
+	//REDIRECT TO LOGIN
 	onSignMeInHandler = () => {
 		this.props.navigation.navigate('Auth');
 	};

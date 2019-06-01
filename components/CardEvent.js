@@ -17,6 +17,7 @@ import CardButton from './CardButton';
 import { sortEvents } from '../helpers/misc';
 
 export default class CardEvent extends Component {
+	//INITIALIZE CUSTOM HELPER FOR API
 	eventumAPI = new eventumAPI();
 
 	state = {
@@ -26,6 +27,7 @@ export default class CardEvent extends Component {
 		navigationSearch: false
 	};
 
+	//SEND REQUEST TO API
 	componentDidMount() {
 		this.getEvents();
 	}
@@ -34,6 +36,7 @@ export default class CardEvent extends Component {
 		try {
 			this.setState({ loading: true });
 			const events = await this.eventumAPI.getEventByCity(city);
+			//SORT EVENTS WITH CUSTOM HELPER BY DATE FROM EARLIEST TO LATEST
 			let sortedEventsByDate = events.events.sort(sortEvents);
 			this.setState({ events: sortedEventsByDate, loading: false });
 		} catch (e) {
@@ -49,6 +52,7 @@ export default class CardEvent extends Component {
 	};
 
 	addToFavour = event => {
+		//SEND REQUEST TO CLOUD DB
 		const user = firebase.auth().currentUser;
 		db.collection('users')
 			.doc(user.uid)
@@ -56,6 +60,7 @@ export default class CardEvent extends Component {
 			.add(event);
 	};
 
+	//REQUEST PERMISSIONS FROM USER TO ACCESS GEOLOCATION
 	onLocationEventSearch = async () => {
 		this.setState({ navigationSearch: true });
 		try {
@@ -96,6 +101,7 @@ export default class CardEvent extends Component {
 		}
 	};
 
+	//REDIRECT TO DETAILS SCREEN AND PASS DATA ALONG
 	showMore = ({ ...args }) => {
 		this.props.navigation.navigate('Details', {
 			...args
@@ -106,6 +112,7 @@ export default class CardEvent extends Component {
 		return id.toString();
 	};
 
+	//RENDER JS WITH ENTIRE CARD
 	cardJSX = ({ item }) => {
 		try {
 			return (
@@ -116,15 +123,15 @@ export default class CardEvent extends Component {
 					<View style={styles.cardMiddle}>
 						<Calendar>{item.start.local}</Calendar>
 						<CardShortDescription
-							title={item.name.text}
-							place={item.venue.name}
-							date={item.start.local}
+							title={item.name.text || 'no title'}
+							place={item.venue.name || 'no place'}
+							date={item.start.local || "no date"}
 						/>
 					</View>
 					<View style={styles.cardFooter}>
 						<CardBlock
 							text="Price"
-							value={item.ticket_availability.minimum_ticket_price.display}
+							value={item.ticket_availability.minimum_ticket_price.display || 'no price'}
 							color={
 								item.ticket_availability.minimum_ticket_price.value > 0
 									? '#EB594B'
@@ -133,7 +140,7 @@ export default class CardEvent extends Component {
 						/>
 						<CardBlock
 							text="Category"
-							value={item.category.short_name}
+							value={item.category.short_name || 'no name'}
 							color="#0086F2"
 						/>
 						<CardBlock

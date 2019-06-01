@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import { Text, View, ScrollView, StyleSheet, Dimensions } from 'react-native';
 import { Button } from 'react-native-elements';
 
+//GET THE WIDTH OF DEVICE SCREEN
 const SCREEN_WIDTH = Dimensions.get('window').width;
 
 export default class Slides extends Component {
 	renderLastSlide(index) {
+		/* IF IT IS LAST SLIDE RENDER BUTTON */
 		return index === this.props.data.length - 1 ? (
 			<Button
 				title="Sign Me In"

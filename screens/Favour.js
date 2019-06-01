@@ -10,6 +10,8 @@ export default class Favour extends Component {
 	static navigationOptions = {
 		title: 'Favourites'
 	};
+
+	//INIT CUSTOM API HELPER
 	myAuth = new myAuth();
 
 	state = {
@@ -17,6 +19,7 @@ export default class Favour extends Component {
 		user: ''
 	};
 
+	//GET DATA
 	getFavourites = () => {
 		try {
 			let events = [];
@@ -38,6 +41,7 @@ export default class Favour extends Component {
 		}
 	};
 
+	//ADD LISTENER TO FETCH DATA WHEN TAB IS FOCUSED
 	componentDidMount() {
 		const { navigation } = this.props;
 		this.focusListener = navigation.addListener('didFocus', () => {
@@ -45,10 +49,12 @@ export default class Favour extends Component {
 		});
 	}
 
+	//REMOVE LISTENER
 	componentWillUnmount() {
 		this.focusListener.remove();
 	}
 
+	//REDIRECT TO EVENT DETAILS AND PASS DATA ALONG
 	goToEvent = (eventID, title) => {
 		this.props.navigation.push('FavourDetails', { itemId: eventID, title });
 	};
@@ -60,14 +66,14 @@ export default class Favour extends Component {
 			title={item.name}
 			subtitle={
 				<FavouriteDescription
-					date={item.date.local}
-					place={`${item.venue.address.address_1}, ${item.venue.address.city}`}
+					date={item.date.local || "no date"}
+					place={`${item.venue.address.address_1 || "no place"}, ${item.venue.address.city || "no city"}`}
 				/>
 			}
 			leftAvatar={{
 				size: 'large',
 				rounded: false,
-				source: { uri: item.logo }
+				source: { uri: item.logo || "" }
 			}}
 			onPress={() => this.goToEvent(item.eventID, item.name)}
 			chevron={

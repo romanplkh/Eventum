@@ -1,3 +1,4 @@
+//CUSTOM CLASS TO HANDLE REQUESTS TO FIREBASE
 import firebase from 'firebase';
 
 export default class Authentication {
