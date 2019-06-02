@@ -35,7 +35,7 @@ export default class Eventum {
 
 	getEventsByLocation(latitude, longitude) {
 		return this.getEvent(
-			`search?location.longitude=${longitude}&location.latitude=${latitude}&location.within=2km&expand=venue,ticket_availability,organizer,category,format`
+			`search?start_date.keyword=this_month&location.longitude=${longitude}&location.latitude=${latitude}&location.within=2km&expand=venue,ticket_availability,organizer,category,format`
 		);
 	}
 }

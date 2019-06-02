@@ -94,9 +94,11 @@ export default class CardEvent extends Component {
 					}
 				);
 			} else {
+				this.setState({ navigationSearch: false });
 				return;
 			}
 		} catch (error) {
+			this.setState({ navigationSearch: false });
 			console.log(error);
 		}
 	};
@@ -125,13 +127,16 @@ export default class CardEvent extends Component {
 						<CardShortDescription
 							title={item.name.text || 'no title'}
 							place={item.venue.name || 'no place'}
-							date={item.start.local || "no date"}
+							date={item.start.local || 'no date'}
 						/>
 					</View>
 					<View style={styles.cardFooter}>
 						<CardBlock
 							text="Price"
-							value={item.ticket_availability.minimum_ticket_price.display || 'no price'}
+							value={
+								item.ticket_availability.minimum_ticket_price.display ||
+								'no price'
+							}
 							color={
 								item.ticket_availability.minimum_ticket_price.value > 0
 									? '#EB594B'
