@@ -16,9 +16,10 @@ const CardShortDes = props => {
 
 const styles = StyleSheet.create({
 	cardDetails: {
-		flex: 3,
+		width: '75%',
 		flexDirection: 'column',
-		justifyContent: 'flex-start'
+		justifyContent: 'space-around',
+		alignItems: 'stretch'
 	},
 	textStyle: {
 		color: '#000'

@@ -11,6 +11,7 @@ import { db } from '../helpers/firestore';
 import ListAddress from '../components/ListAddress';
 import DetailsBlock from '../components/DetailsBlock';
 import Moment from 'react-moment';
+import { Snackbar } from 'react-native-paper';
 
 export default class EventDetails extends Component {
 	static navigationOptions = ({ navigation }) => {
@@ -30,25 +31,30 @@ export default class EventDetails extends Component {
 			latitudeDelta: 0.006757,
 			longitudeDelta: 0.006866
 		},
-		open: false
+		open: false,
+		snackBarVisible: false
 	};
 
 	//GET EVENT DETAILS FROM API
 	async componentDidMount() {
-		const events = await this.eventumAPI.getEventById(
-			`${this.props.navigation.getParam('itemId')}`
-		);
+		try {
+			const events = await this.eventumAPI.getEventById(
+				`${this.props.navigation.getParam('itemId')}`
+			);
 
-		this.setState(prevState => {
-			return {
-				venue: events,
-				location: {
-					...prevState.location,
-					latitude: parseFloat(events.venue.address.latitude),
-					longitude: parseFloat(events.venue.address.longitude)
-				}
-			};
-		});
+			this.setState(prevState => {
+				return {
+					venue: events,
+					location: {
+						...prevState.location,
+						latitude: parseFloat(events.venue.address.latitude),
+						longitude: parseFloat(events.venue.address.longitude)
+					}
+				};
+			});
+		} catch (error) {
+			console.log(error);
+		}
 	}
 
 	//REMOVE FROM STATE DATA ABOUT EVENT
@@ -57,7 +63,16 @@ export default class EventDetails extends Component {
 	}
 
 	//SAVE EVENT IN CLOUD DB
-	addToFavour = event => {
+	addToFavour = venue => {
+		const event = {
+			eventID: venue.id,
+			logo: venue.logo.url,
+			name: venue.name.text,
+			date: venue.start,
+			currency: venue.currency,
+			venue: venue.venue,
+			tickets: venue.ticket_availability.minimum_ticket_price
+		};
 		//GET USER ID
 		const user = firebase.auth().currentUser;
 		//SAVE FILE
@@ -75,11 +90,13 @@ export default class EventDetails extends Component {
 				snapShot.forEach(doc => {
 					eventsArr.push(doc.data());
 				});
+				//IF EVENT ALREADY ADDED
 				if (eventsArr.length > 0) {
 					return;
 				} else {
 					//IF EVENT DOES NOT EXISTS, ADD IT
 					docRef.add(event);
+					this.setState({ snackBarVisible: true });
 				}
 			});
 	};
@@ -93,7 +110,7 @@ export default class EventDetails extends Component {
 	};
 
 	render() {
-		const { venue, location } = this.state;
+		const { venue, location, snackBarVisible } = this.state;
 		if (!venue || !location.latitude) {
 			return <Spinner color="#54BFA1" />;
 		} else {
@@ -101,10 +118,10 @@ export default class EventDetails extends Component {
 				<Provider>
 					<ScrollView style={{ flex: 1 }} ref="scrollView">
 						<Tile
-							imageSrc={{ uri: venue.logo.url || "" }}
-							title={venue.name.text || "no title"}
+							imageSrc={{ uri: venue.logo.url || '' }}
+							title={venue.name.text || 'no title'}
 							featured
-							caption={venue.venue.name || "no name"}
+							caption={venue.venue.name || 'no name'}
 							captionStyle={{ fontWeight: 'bold' }}
 							overlayContainerStyle={{ backgroundColor: 'rgba(0,0,0,0.5)' }}
 						/>
@@ -115,7 +132,7 @@ export default class EventDetails extends Component {
 						/>
 						<DetailsBlock
 							style={'organizer'}
-							text={venue.organizer.description.text}
+							text={venue.organizer.description.text || 'No organizer'}
 							textStyle={'organizerText'}
 						/>
 						<PricingCard
@@ -130,7 +147,14 @@ export default class EventDetails extends Component {
 									: 'Free'
 							}
 							price={venue.ticket_availability.minimum_ticket_price.major_value}
-							info={['Format', `${venue.format.short_name}`]}
+							info={[
+								'Format',
+								`${
+									venue.format.short_name
+										? venue.format.short_name
+										: 'No Format provided'
+								}`
+							]}
 							button={{
 								title: `${
 									venue.ticket_availability.has_available_tickets
@@ -145,16 +169,14 @@ export default class EventDetails extends Component {
 						/>
 						<ListAddress
 							heading={'Address'}
-							title_addr={`${venue.venue.address.address_1 || "no address"}, ${
-								venue.venue.address.city || "no city"
-							}`}
-							title_addr_sec={`${venue.venue.address.city || "no city"}, ${
-								venue.venue.address.postal_code || "no postal code"
-							}`}
+							title_addr={`${venue.venue.address.address_1 ||
+								'no address'}, ${venue.venue.address.city || 'no city'}`}
+							title_addr_sec={`${venue.venue.address.city || 'no city'}, ${venue
+								.venue.address.postal_code || 'no postal code'}`}
 							icon_addr="place"
 							time={
 								<Moment element={Text} format="LLLL">
-									{venue.start.local || "no date"}
+									{venue.start.local || 'no date'}
 								</Moment>
 							}
 							icon_time="timer"
@@ -167,16 +189,7 @@ export default class EventDetails extends Component {
 									{
 										icon: 'star',
 										label: 'Like',
-										onPress: () =>
-											this.addToFavour({
-												eventID: venue.id,
-												logo: venue.logo.url,
-												name: venue.name.text,
-												date: venue.start,
-												currency: venue.currency,
-												venue: venue.venue,
-												tickets: venue.ticket_availability.minimum_ticket_price
-											})
+										onPress: () => this.addToFavour(venue)
 									},
 									{
 										icon: 'place',
@@ -190,6 +203,13 @@ export default class EventDetails extends Component {
 								]}
 								onStateChange={({ open }) => this.setState({ open })}
 							/>
+							<Snackbar
+								duration={2500}
+								visible={snackBarVisible}
+								onDismiss={() => this.setState({ snackBarVisible: false })}
+							>
+								Event added to favourites
+							</Snackbar>
 						</Portal>
 						<MapView
 							initialRegion={this.state.location}

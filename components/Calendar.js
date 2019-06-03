@@ -17,7 +17,8 @@ const Calendar = props => {
 
 const styles = StyleSheet.create({
 	dateCal: {
-		flex: 1,
+		//flex: 1,
+		width: '25%',
 		alignItems: 'center',
 		marginRight: 13
 	},

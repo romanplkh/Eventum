@@ -54,10 +54,16 @@ export default class CardEvent extends Component {
 	addToFavour = event => {
 		//SEND REQUEST TO CLOUD DB
 		const user = firebase.auth().currentUser;
-		db.collection('users')
-			.doc(user.uid)
-			.collection('favours')
-			.add(event);
+
+		try {
+			db.collection('users')
+				.doc(user.uid)
+				.collection('favours')
+				.add(event);
+			this.setState({ snackBarVisible: true });
+		} catch (error) {
+			console.log(error);
+		}
 	};
 
 	//REQUEST PERMISSIONS FROM USER TO ACCESS GEOLOCATION
@@ -89,7 +95,7 @@ export default class CardEvent extends Component {
 							});
 					},
 					error => {
-						alert(`${error.message}`);
+						alert(`Please, check your geolocation module${error.message}`);
 						this.setState({ navigationSearch: false });
 					}
 				);
@@ -230,36 +236,24 @@ export default class CardEvent extends Component {
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
 		elevation: 10,
 		marginTop: 10,
 		marginBottom: 10,
 		borderRadius: 5,
 		backgroundColor: '#fff',
-		padding: 10,
-		minHeight: 200
+		minHeight: 200,
+		width: '100%'
 	},
 	cardTop: {
-		flex: 1,
-		flexDirection: 'row',
-		flexWrap: 'nowrap',
 		alignItems: 'center',
 		width: '100%'
 	},
 	cardMiddle: {
 		flexDirection: 'row',
-		justifyContent: 'space-around',
-		alignItems: 'center',
-		flex: 1,
-		width: '100%',
-		marginHorizontal: 10
-	},
-	cardBottom: {
-		flex: 1,
-		flexDirection: 'row',
-		alignItems: 'center',
 		justifyContent: 'space-between',
-		padding: 5
+		alignItems: 'flex-start',
+		marginHorizontal: 10,
+		marginTop: 20
 	},
 	cardFooter: {
 		flex: 1,

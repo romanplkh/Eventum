@@ -7,7 +7,7 @@ export const sortEvents = (a, b) => {
 
 //SORTS FROM OLDEST TO EARLIEST
 export const sortEventsDesc = (a, b) => {
-	return new Date(b.start.local).getTime() - new Date(a.start.local).getTime();
+	return new Date(b.date.local).getTime() - new Date(a.date.local).getTime();
 };
 
 //CLEANS TEXT FROM TRAILING WHITE SPACES, CARRIAGE RETURNS, NEW LINES

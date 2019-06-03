@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Image } from 'react-native';
+import { StyleSheet, Image, Dimensions } from 'react-native';
 
 const CardImage = props => {
 	return (
@@ -16,7 +16,7 @@ const CardImage = props => {
 const styles = StyleSheet.create({
 	img: {
 		flex: 1,
-		width: null,
+		width: Dimensions.get('window').width,
 		height: 180,
 		opacity: 0.95
 	}

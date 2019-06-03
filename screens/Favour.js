@@ -5,6 +5,9 @@ import { db } from '../helpers/firestore';
 import myAuth from '../helpers/auth';
 import Spinner from '../components/common/Spinner';
 import FavouriteDescription from '../components/FavouriteDescription';
+import Swipeout from 'react-native-swipeout';
+import { Snackbar } from 'react-native-paper';
+import { sortEventsDesc } from '../helpers/misc';
 
 export default class Favour extends Component {
 	static navigationOptions = {
@@ -16,7 +19,8 @@ export default class Favour extends Component {
 
 	state = {
 		events: null,
-		user: ''
+		user: '',
+		snackBarVisible: false
 	};
 
 	//GET DATA
@@ -34,7 +38,8 @@ export default class Favour extends Component {
 						events.push(item);
 					});
 
-					this.setState({ events });
+					//Set state with sorted by desc events dates
+					this.setState({ events: events.sort(sortEventsDesc) });
 				});
 		} catch (e) {
 			console.log(e);
@@ -54,6 +59,41 @@ export default class Favour extends Component {
 		this.focusListener.remove();
 	}
 
+	deleteItem = async item => {
+		//GET USER ID
+		const user = this.myAuth.getUser().uid;
+		const favourEventsRef = db
+			.collection('users')
+			.doc(user)
+			.collection('favours');
+		let event = [];
+
+		try {
+			const query = await favourEventsRef.where('eventID', '==', item).get();
+
+			await query.forEach(doc => {
+				event.push(doc.id);
+			});
+		} catch (error) {
+			console.log(`${error} : Item is not found`);
+		}
+
+		try {
+			favourEventsRef
+				.doc(event[0])
+				.delete()
+				.then(() => {
+					this.getFavourites();
+					//	this.setState({ snackBarVisible: true });
+				})
+				.then(() => {
+					this.setState({ snackBarVisible: true });
+				});
+		} catch (error) {
+			console.error('Error removing document: ', error);
+		}
+	};
+
 	//REDIRECT TO EVENT DETAILS AND PASS DATA ALONG
 	goToEvent = (eventID, title) => {
 		this.props.navigation.push('FavourDetails', { itemId: eventID, title });
@@ -61,29 +101,51 @@ export default class Favour extends Component {
 
 	keyExtractor = (item, index) => index.toString();
 
-	renderItem = ({ item }) => (
-		<ListItem
-			title={item.name}
-			subtitle={
-				<FavouriteDescription
-					date={item.date.local || "no date"}
-					place={`${item.venue.address.address_1 || "no place"}, ${item.venue.address.city || "no city"}`}
-				/>
+	renderItem = ({ item }) => {
+		const swipeoutBtns = [
+			{
+				text: 'Delete',
+				backgroundColor: '#c90000',
+				onPress: () => this.deleteItem(item.eventID)
 			}
-			leftAvatar={{
-				size: 'large',
-				rounded: false,
-				source: { uri: item.logo || "" }
-			}}
-			onPress={() => this.goToEvent(item.eventID, item.name)}
-			chevron={
-				<Icon name="arrow-circle-right" type="font-awesome" color="#60D9C4" />
-			}
-		/>
-	);
+		];
+
+		return (
+			<Swipeout right={swipeoutBtns} backgroundColor="#54D68C" autoClose={true}>
+				<View>
+					<ListItem
+						title={item.name}
+						subtitle={
+							<FavouriteDescription
+								date={item.date.local || 'no date'}
+								place={`${item.venue.address.address_1 || 'no place'}, ${item
+									.venue.address.city || 'no city'}`}
+							/>
+						}
+						leftAvatar={{
+							size: 'large',
+							rounded: false,
+							source: { uri: item.logo || '' }
+						}}
+						onPress={() => this.goToEvent(item.eventID, item.name)}
+						chevron={
+							<Icon
+								name="arrow-circle-right"
+								type="font-awesome"
+								color="#60D9C4"
+							/>
+						}
+						onLongPress={() => {
+							alert('pressed');
+						}}
+					/>
+				</View>
+			</Swipeout>
+		);
+	};
 
 	render() {
-		const { events } = this.state;
+		const { events, snackBarVisible } = this.state;
 		return (
 			<View style={{ flex: 1 }}>
 				{!events && <Spinner color="#54BFA1" />}
@@ -94,6 +156,13 @@ export default class Favour extends Component {
 						renderItem={this.renderItem}
 					/>
 				)}
+				<Snackbar
+					duration={2500}
+					visible={snackBarVisible}
+					onDismiss={() => this.setState({ snackBarVisible: false })}
+				>
+					Event successfully deleted
+				</Snackbar>
 			</View>
 		);
 	}
