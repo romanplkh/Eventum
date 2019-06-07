@@ -39,7 +39,8 @@ export default class Auth extends Component {
 			.logIn(email, password)
 			.then(user => {
 				this.setState({ loading: false, errors: '' });
-				navigate('App', { name: user.displayName });
+				let nameUser = user.user.displayName;
+				navigate('Main', { name: nameUser });
 			})
 			.catch(error => {
 				/* IF LOGIN FAIL TRY TO SIGN UP USER */
@@ -53,7 +54,7 @@ export default class Auth extends Component {
 					})
 					.then(user => {
 						this.setState({ loading: false, errors: '' });
-						navigate('App', { name: this.state.name });
+						navigate('Main', { name: this.state.name });
 					})
 					.catch(() => {
 						//CATCHES IF USER ALREADY EXISTS BUT PROVIDED WRONG PASSWORD
@@ -66,7 +67,6 @@ export default class Auth extends Component {
 	};
 
 	componentDidMount() {
-
 		//Track when keyboard is open or closed
 		this.keyboardDidShowListener = Keyboard.addListener(
 			'keyboardDidShow',
@@ -79,7 +79,6 @@ export default class Auth extends Component {
 	}
 
 	componentWillUnmount() {
-
 		//Remove listeners when component unmounted.
 		this.keyboardDidShowListener && this.keyboardDidShowListener.remove();
 		this.keyboardDidHideListener && this.keyboardDidHideListener.remove();

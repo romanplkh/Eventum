@@ -4,11 +4,11 @@ export const SLIDE_DATA = [
 		color: '#5ACCAC'
 	},
 	{
-		text: 'Your ultimate guide in the world of awesomeness',
+		text: 'Your best companion in the ocean of events',
 		color: '#54D6D6'
 	},
 	{
-		text: 'Let your event flow',
+		text: 'Design Your Day',
 		color: '#54D68C'
 	}
 ];
