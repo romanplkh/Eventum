@@ -1,5 +1,7 @@
 # Eventum
 
+### walk through: https://github.com/romanplkh/Eventum/blob/master/Eventum.mp4
+
 ## Mobile App Objectives 
 This mobile application “Eventum” is developed to help users to find various events organized in their community. Additionally, to the habitual search of events based on the entered city, “Eventum” improves this process and facilitates finding events through the use of current geolocation of users. Also, application allows users to store events they liked, so they can quickly find them, as well as provide an option to buy tickets for event. 
 ## List of Features 
