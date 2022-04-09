@@ -9,7 +9,7 @@
   "dependencies": {
     "firebase": "^6.0.1",
     "firestore": "^1.1.6",
-    "moment": "^2.24.0",
+    "moment": "^2.29.2",
     "react": "16.8.3",
     "react-moment": "^0.9.2",
     "react-native": "0.59.5",
